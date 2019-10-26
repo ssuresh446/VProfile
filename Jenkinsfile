@@ -1,17 +1,28 @@
-pipeline {
+pipeline   {
     agent any
-    stages{
-        stage('Build'){
-            steps {
-                sh 'mvn clean package'
+
+    stages {
+        stage('Compile Stage') {
+           steps {
+                withMaven(maven : 'maven_3_6_2') {
+                sh 'mvn clean compile'
+                }    
             }
-            post {
-                success {
-                    echo 'Now Archiving...'
-                    archiveArtifacts artifacts: '**/target/*.war'
-                }
+        }
+        
+        stage('Testing Stage') {
+            steps {
+                withMaven(maven : 'maven_3_6_2') {
+                    sh 'mvn test'
+                }    
+            }
+        }
+        stage('Deployment Stage') {
+            steps {
+                withMaven(maven : 'maven_3_6_2') {
+                    sh 'mvn deploy'
+                }    
             }
         }
     }
 }
-
